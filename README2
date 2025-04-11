@@ -22,7 +22,7 @@ Compilation:
 To compile from source, use GNU C++ compiler version 17 or higher. OpenMP support is required for parallelization.
 
 Example:
-g++ -std=c++17 -fopenmp -O3 -o wdw.gc main.cpp
+g++ -std=c++17 -fopenmp -c -O3 -o wdw.gc.o wdw.gc.cpp
 
 Documentation:
 For detailed instructions and parameter explanations, refer to the manual:
