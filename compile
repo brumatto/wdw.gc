@@ -1,3 +1,3 @@
 #!/usr/bin/bash
-for i in wdw.gc.aux wdw.gc GCsolve; do g++ -Wall -std=c++17 -c -o $i.o $i.cpp -fopenmp; done
-g++ -Wall -std=c++17 -o wdw.gc wdw.gc.aux.o wdw.gc.o GCsolve.o -fopenmp
+for i in wdw.gc.aux wdw.gc GCsolve; do g++ -Wall -std=c++17 -O3 -c -o $i.o $i.cpp -fopenmp; done
+g++ -Wall -std=c++17 -O3 -o wdw.gc wdw.gc.aux.o wdw.gc.o GCsolve.o -fopenmp
