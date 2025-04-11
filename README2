@@ -1,0 +1,32 @@
+Wheeler-DeWitt Solver
+
+Program to solve the Wheeler-DeWitt equation for the early Universe using the Initial Value Problem (IVP) approach.
+
+wdw.gc is an open-source program for solving the (2+1)-dimensional Wheeler-DeWitt equation. It employs the Crank-Nicolson method to discretize the time evolution and constructs a linear system, which is then solved at each timestep using the Conjugate Gradient (CG) method.
+
+Features:
+- Solves Wheeler-DeWitt equations in (2+1) dimensions
+- Crank-Nicolson scheme for time evolution
+- Conjugate Gradient (CG) solver for sparse linear systems
+- Parameterized via INI configuration file (wdw.ini by default)
+- Outputs:
+  - Mean values of relevant parameters to standard output
+  - CG iteration logs to standard error
+
+Usage:
+./wdw.gc <ini_file>
+
+<ini_file> is optional. If not specified, the program will attempt to load wdw.ini.
+
+Compilation:
+To compile from source, use GNU C++ compiler version 17 or higher. OpenMP support is required for parallelization.
+
+Example:
+g++ -std=c++17 -fopenmp -c -O3 -o wdw.gc.o wdw.gc.cpp
+
+Documentation:
+For detailed instructions and parameter explanations, refer to the manual:
+wdw.gc.manual.pdf
+
+License:
+This project is licensed under the terms of the GNU General Public License v3.0.
