@@ -16,7 +16,7 @@
 
 using namespace std;
 
-vector<complex<double>> createB(int Na,int Nphi, double a, double phi, double Ea, double Ephi) {
+vector<complex<double>> createPsi0(int Na,int Nphi, double a, double phi, double Ea, double Ephi) {
   int i, j;
   vector<complex<double>> b((Na+1)*(Nphi+1),0);
   #pragma omp parallel for private(i, j) shared(b)

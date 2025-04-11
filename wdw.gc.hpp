@@ -16,7 +16,7 @@
 using namespace std;
 
 /**
-  * @fn vector<complex> *createB(int Na, int Nphi, double a, double phi, double Ea, double Ephi)
+  * @fn vector<complex> *createPsi0(int Na, int Nphi, double a, double phi, double Ea, double Ephi)
   * @brief Cria um vetor de B inicial para a função de estado Psi usando Cranck-Nicolson com tamanho (Ma+1)x(Mphi+1)
   * @brief \Psi(a,\varphi) = \dfrac{2^{15/4}}{\sqrt{\pi}}E^{3/4}_aE^{1/4}_{\varphi}a\exp\left(-4E_aa^2 - 2E_{\varphi}\varphi^2\right)
   * @param *Na número de pontos na dimensão a
@@ -27,7 +27,7 @@ using namespace std;
   * @param Ephi Energia média na coordenada phi
   * @return um vector com esta configuração
   */
-vector<complex<double>> createB(int, int, double, double, double, double);
+vector<complex<double>> createPsi0(int, int, double, double, double, double);
 
 /**
   * @fn sm_matrix<complex<double>> createMatrix(int Na,int Nphi,complex ra, complex rb, vector<complex<double>> a)

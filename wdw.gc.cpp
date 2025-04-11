@@ -21,6 +21,13 @@
 
 using namespace std;
 
+double potential(double a, double phi, double lambda, double mass) {
+  double a2 = a*a;
+  double phi2 = phi*phi;
+  return (3*a2 - lambda*a2*a2 - phi2/2 - mass*mass*a2*phi2/2);
+}
+
+
 int main(int argc, char **args) {
   int Na, Nphi, Nt, nproc=0, pt;
   double inftya, inftyphi, inftyt, lastT, Da, Dphi, Dt, t0, Ea, Ephi;
@@ -99,10 +106,10 @@ int main(int argc, char **args) {
     b = vector<complex<double>>((Na+1)*(Nphi+1));
     #pragma omp parallel for shared(Vef, m, b, Da, Dphi, Dt, ic, ra, rphi)
     for(int i = 0; i <= Na; i++) {
-      double ai = Da*Da*i*i;
+      double ai = Da*i;
       for(int j = 0; j <= Nphi; j++) {
-        double phij = (Dphi*j-inftyphi)*(Dphi*j-inftyphi);
-        Vef[j*(Na+1)+i] = 3*ai - lambda*ai*ai - phij/2 - mass*mass*ai*phij/2;
+        double phij = (Dphi*j-inftyphi);
+        Vef[j*(Na+1)+i] = potential(ai,phij,lambda,mass);
         m[j*(Na+1)+i] = 1.0+2.0*ra+2.0*rphi+ic*Dt*Vef[j*(Na+1)+i]/2.0;
         b[j*(Na+1)+i] = 1.0-2.0*ra-2.0*rphi-ic*Dt*Vef[j*(Na+1)+i]/2.0;
       }
@@ -114,7 +121,7 @@ int main(int argc, char **args) {
     s = 0;
     if(!resume) {
       t0 = 0;
-      psi = createB(Na,Nphi,inftya,inftyphi,Ea,Ephi);
+      psi = createPsi0(Na,Nphi,inftya,inftyphi,Ea,Ephi);
       sprintf(filename,"%s/%s%06.3lf.dat",dir,arqout.c_str(),0.0);
       ofstream datfile(filename,ios::out | ios::binary);
       if(!datfile.is_open()) {
