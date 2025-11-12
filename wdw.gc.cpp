@@ -72,7 +72,7 @@ int main(int argc, char **args) {
             // Evolução temporal
             else if(variavel == "Tlast")     iss >> lastT;
             else if(variavel == "T")     iss >> inftyt;
-            else if(variavel == "Nt")    iss >> Nt;
+            else if(variavel == "DeltaT")    iss >> Dt;
             else if(variavel == "Print") iss >> pt;
             // Parâmetros para iterações e versões
             else if(variavel == "Emax")  iss >> emax;
@@ -96,7 +96,7 @@ int main(int argc, char **args) {
 
     omp_set_dynamic(0);     // Não há escolha dinâmica
     omp_set_num_threads(nproc); // Número explícito de threads
-    Dt = inftyt/Nt;
+    Nt = (int) (inftyt/Dt);
     Da = inftya/Na;
     Dphi = 2*inftyphi/Nphi;
     ra = -Dt/(24.0*ic*Da*Da);
