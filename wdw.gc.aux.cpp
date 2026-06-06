@@ -31,7 +31,7 @@ vector<complex<double>> createPsi0(int Na,int Nphi, double a, double phi, double
 }
 
 
-sm_matrix<complex<double>> createMatrix(int Na,int Nphi,complex<double> ra,complex<double> rphi, vector<complex<double>> a) {
+sm_matrix<complex<double>> createMatrix(int Na,int Nphi,complex<double> ra,complex<double> rphi, vector<complex<double>> a, double c[4][4], int r) {
   sm_matrix<complex<double>> m((Na+1)*(Nphi+1));
   int i;
   
@@ -44,10 +44,12 @@ sm_matrix<complex<double>> createMatrix(int Na,int Nphi,complex<double> ra,compl
     else if(i%(Na+1)==Na) m.setCell(i,i,1); // psi(\infty,phi) = 0;
     else { // Matriz de Cranck-Nicolson 
       if(abs(a[i])>0) m.setCell(i,i,a[i]);
-      m.setCell(i,i+1,-ra);
-      m.setCell(i,i-1,-ra);
-      m.setCell(i,i+(Na+1),-rphi);
-      m.setCell(i,i-(Na+1),-rphi);
+      for(int k = 1; k <= r; k++) {
+        if((i+k)%(Na+1) < Na) m.setCell(i,i+k,-ra*c[r][k]);
+        if((i-k)%(Na+1) > 0) m.setCell(i,i-k,-ra*c[r][k]);
+        if(i+k*(Na+1) < Nphi*(Na+1)) m.setCell(i,i+k*(Na+1),-rphi*c[r][k]);
+        if(i-k*(Na+1) > Na) m.setCell(i,i-k*(Na+1),-rphi*c[r][k]);
+      }
     }
   }
   return m;

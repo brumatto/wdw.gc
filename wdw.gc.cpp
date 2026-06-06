@@ -4,6 +4,7 @@
   * @author Hamilton José Brumatto
   * @since 16/08/2022
   * @version 1.0 (2022)
+  * @version 2.0 (2026) Incluído ordem de aproximação: r para a e phi, e M para tau.
   */
 
 #include <cstdio>
@@ -29,11 +30,15 @@ double potential(double a, double phi, double lambda, double mass) {
 
 
 int main(int argc, char **args) {
-  int Na, Nphi, Nt, nproc=0, pt;
-  double inftya, inftyphi, inftyt, lastT, Da, Dphi, Dt, t0, Ea, Ephi;
+  int Na, Nphi, Nt, nproc=0, pt, r=1;
+  double c[4][4] = {{ 0., 0., 0., 0. },
+                    {-2., 1., 0., 0. },
+                    {-5./2, 4./3, -1./12, 0.},
+                    {-49./18, 3./2, -3./20, 1./90}};
+  double inftya, inftyphi, inftyt=1.0, lastT, Da, Dphi, Dt, t0, Ea, Ephi;
   double lambda, mass;
-  complex<double> ra(0,0), rphi(0,0), ic(0,1);
-  vector<complex<double>> m, b;
+  complex<double> ra(0,0), rphi(0,0), ic(0,1), z(-2,0), zbar(-2,0);
+  vector<complex<double>> m, b, mt;
   vector<double> Vef;
   double err, emax, avmax;
   double Psi2, Psi2b, Psi2a, Psi2in, amed, amedb, ameda, amedin, phimed, phimedb, phimeda, phimedin, phi2med, phi2medb, phi2meda, phi2medin;
@@ -53,7 +58,7 @@ int main(int argc, char **args) {
     while(!feof(inifile)) {
         fgets(linha,120,inifile);
         string slinha = linha;
-        auto i = find_if_not(slinha.begin(),slinha.end(),[](char c){ return c==' ';});
+        auto i = find_if_not(slinha.begin(),slinha.end(),[](char ch){ return ch==' ';});
         if(isalpha(*i)) {
             stringstream iss(slinha);
             iss >> variavel;
@@ -62,6 +67,7 @@ int main(int argc, char **args) {
             else if(variavel == "Nphi")  iss >> Nphi;
             else if(variavel == "a")     iss >> inftya;
             else if(variavel == "phi")   iss >> inftyphi;
+            else if(variavel == "R")     iss >> r;
             // Vef
             else if(variavel == "Lambda")iss >> lambda;
             else if(variavel == "m")     iss >> mass;
@@ -99,10 +105,11 @@ int main(int argc, char **args) {
     Nt = (int) (inftyt/Dt);
     Da = inftya/Na;
     Dphi = 2*inftyphi/Nphi;
-    ra = -Dt/(24.0*ic*Da*Da);
-    rphi = Dt/(4.0*ic*Dphi*Dphi);
+    ra = ic*Dt/(12.*(z*zbar)*Da*Da);        //falta multiplicar por z -Dt/(24.0*ic*Da*Da);
+    rphi = -ic*Dt/(2.*(z*zbar)*Dphi*Dphi);  //falta multiplicar por z Dt/(4.0*ic*Dphi*Dphi);
     Vef = vector<double>((Na+1)*(Nphi+1));
     m = vector<complex<double>>((Na+1)*(Nphi+1));
+    mt = vector<complex<double>>((Na+1)*(Nphi+1));
     b = vector<complex<double>>((Na+1)*(Nphi+1));
     #pragma omp parallel for shared(Vef, m, b, Da, Dphi, Dt, ic, ra, rphi)
     for(int i = 0; i <= Na; i++) {
@@ -110,13 +117,14 @@ int main(int argc, char **args) {
       for(int j = 0; j <= Nphi; j++) {
         double phij = (Dphi*j-inftyphi);
         Vef[j*(Na+1)+i] = potential(ai,phij,lambda,mass);
-        m[j*(Na+1)+i] = 1.0+2.0*ra+2.0*rphi+ic*Dt*Vef[j*(Na+1)+i]/2.0;
-        b[j*(Na+1)+i] = 1.0-2.0*ra-2.0*rphi-ic*Dt*Vef[j*(Na+1)+i]/2.0;
+        m[j*(Na+1)+i] = 1.0+c[r][0]*ra*z+c[r][0]*rphi*z-ic*Dt*Vef[j*(Na+1)+i]*z/(z*zbar);
+        mt[j*(Na+1)+i] = 1.0-c[r][0]*ra*zbar-c[r][0]*rphi*zbar+ic*Dt*Vef[j*(Na+1)+i]*zbar/(z*zbar);
+        b[j*(Na+1)+i] = 1.0-c[r][0]*ra*z-c[r][0]*rphi*z+ic*Dt*Vef[j*(Na+1)+i]*z/(z*zbar);
       }
     }
-    M = createMatrix(Na,Nphi,ra,rphi,m);
-    B = createMatrix(Na,Nphi,-ra,-rphi,b);
-    Mt = mMtc(M); cerr << "Matriz transposta calculada" << endl;
+    M = createMatrix(Na,Nphi,-ra*z,-rphi*z,m,c,r);
+    B = createMatrix(Na,Nphi,ra*z,rphi*z,b,c,r);
+    Mt = createMatrix(Na,Nphi,ra*zbar,rphi*zbar,mt,c,r); cerr << "Matrizes calculadas" << endl;
     K = mMtM(M,Na); cerr << "K = M*M calculado" << endl;
     s = 0;
     if(!resume) {

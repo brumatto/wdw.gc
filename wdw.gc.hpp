@@ -30,16 +30,18 @@ using namespace std;
 vector<complex<double>> createPsi0(int, int, double, double, double, double);
 
 /**
-  * @fn sm_matrix<complex<double>> createMatrix(int Na,int Nphi,complex ra, complex rb, vector<complex<double>> a)
+  * @fn sm_matrix<complex<double>> createMatrix(int Mx,int My,complex alfa, complex<double> betax, complex<double> betay, vector<complex<double>> a, double **c, int r)
   * @brief Cria uma matriz (Mx+1)(My+1) x (Mx+1)(My+1) dos sistema linear de diferenças finitas usando Cranck-Nicolson
   * @param *Mx número de pontos na dimensão x
   * @param *My número de pontos na dimensão y
   * @param alfa diagonal principal
-  * @param betax (-betax) diagonal superior e inferior à principal
-  * @param betay (-betay) diagonal distante My superior e inferior à principal
+  * @param betax (-betax) diagonal k superior e inferior à principal a ser multiplicado por c_k^r
+  * @param betay (-betay) diagonal distante Mx*k superior e inferior à principal a ser multiplicado por c_k^r
+  * @param c coeficientes da aproximação de taylor para f'' de ordem r: c_k^r
+  * @param r ordem da aproximação de taylor para f''
   * @return uma matriz esparsa com esta configuração
   */
-sm_matrix<complex<double>> createMatrix(int,int,complex<double>,complex<double>,vector<complex<double>>);
+sm_matrix<complex<double>> createMatrix(int,int,complex<double>,complex<double>,vector<complex<double>>,double [4][4],int);
 
 /**
   * @fn sm_matrix<complex<double>> mMtc(sm_matrix<complex<double>> &m)
