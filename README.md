@@ -1,6 +1,6 @@
 ```bash
 
-```markdown
+```
 # wdw.gc
 
 **A high-performance C++ solver for the Wheeler-DeWitt Equation in the Early Universe using the Initial Value Problem (IVP) approach.**
